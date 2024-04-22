@@ -1,0 +1,199 @@
+#include<Adafruit_SSD1306.h>
+#include<EEPROM.h>
+#define RESET LED_BUILTIN
+Adafruit_SSD1306 oled(RESET);
+int ir1=7;
+int ir2=8;
+int delaycount=0;
+int count=0;                                                                                                                              
+#define relay 3
+//-------------------------
+void setup()
+{
+    Serial.begin(9600);
+    pinMode(ir1,INPUT);
+    pinMode(ir2,INPUT);
+    pinMode(relay, OUTPUT);
+
+
+    count=EEPROM.read(0);
+    EEPROM.write(0,0);
+    oled.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+    oled.setTextSize(1.2);
+    oled.setTextColor(WHITE);
+    oled.display();
+
+    //---------------------------------------------
+    oled.clearDisplay();
+      oled.setCursor(0, 0);
+      oled.print("BI DIRECTIONAL");
+      oled.display();
+      delay(250);
+      oled.setCursor(10,10);
+      oled.print("COUNTER AND");
+      oled.display();
+      delay(250);
+      oled.setCursor(20,20);
+      oled.print("LIGHT CONTROL");
+      oled.display();
+    delay(250);
+    //---------------------------
+      oled.clearDisplay();
+      oled.setCursor(40, 10);
+      oled.print("TEAM-5");
+      oled.display();
+      delay(250);
+     
+      //..................
+      oled.clearDisplay();
+      oled.setCursor(0, 0);
+      oled.print("MEMBERS");
+      oled.display();
+      delay(250);
+      oled.setCursor(10,10);
+      oled.print("ATHUL H S ");
+      oled.display();
+      delay(250);
+      oled.setCursor(20,20);
+      oled.print(" NESVIN SAHEER");
+      oled.display();
+      delay(250);
+      //..................
+      oled.clearDisplay();
+      oled.setCursor(0, 0);
+      oled.print("TEAM MEMBERS");
+      oled.display();
+      delay(250);
+      oled.setCursor(10,10);
+      oled.print("HARIKRISHNA U ");
+      oled.display();
+      delay(250);
+      oled.setCursor(20,20);
+      oled.print("MEENAKSHI SURESH");
+      oled.display();
+      delay(250);
+      oled.clearDisplay();
+      oled.setCursor(0,0);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.setCursor(20,8);
+      oled.print("VISITOR ");
+      oled.setCursor(40,18);
+      oled.print(" COUNTER");
+      oled.setCursor(0,28);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.display();
+      //------------------------------------
+}    
+//-----------------------
+void loop()
+{
+  int time =millis()/1000;
+ 
+  if (digitalRead(ir1)==LOW)
+    {
+      delay(50);
+   while(digitalRead(ir1)==LOW)
+    {
+      delay(10);
+    }
+      delay(10);
+  while(digitalRead(ir2)==HIGH && delaycount <1000)
+    {
+      delay(10);
+      delaycount++;
+    }
+  if (digitalRead(ir2)==LOW)
+    {
+      count ++;
+      EEPROM.write(0,count);
+     
+      oled.clearDisplay();
+      oled.setCursor(0,0);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.setCursor(15, 8);
+      oled.print("VISITOR COUNTER");
+      oled.setCursor(0, 18);
+      oled.print("count = ");
+      oled.setCursor(50,18);
+      oled.print(count);
+      oled.setCursor(0,28);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.display();
+    }
+  if (count>=1)
+      {
+      digitalWrite(relay,HIGH);
+      }
+  else if(delaycount >= 1000)
+    {
+      oled.clearDisplay();
+      oled.setCursor(0,0);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.setCursor(15, 8);
+      oled.print("VISITOR COUNTER");
+      oled.setCursor(0, 18);
+      oled.print("count = ");
+      oled.setCursor(50,18);
+      oled.print(count);
+      oled.setCursor(0,28);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.display();
+    }
+    }
+      delay(10);
+  if (digitalRead(ir2)==LOW)
+    {
+      delay(10);
+  while(digitalRead(ir2)==LOW)
+    {
+      delay(10);
+     
+    }
+      delay(10);
+  while(digitalRead(ir1)==HIGH && delaycount <1000)
+    {
+      delay(1);
+      delaycount++;
+     
+    }
+  if (digitalRead(ir1)==LOW)
+    {
+      count --;
+      EEPROM.write(0,count);
+      if (count<=0)
+    {
+      digitalWrite(relay,LOW);
+      count=0;
+    }
+      oled.clearDisplay();
+      oled.setCursor(0,0);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.setCursor(15, 8);
+      oled.print("VISITOR COUNTER");
+      oled.setCursor(0, 18);
+      oled.print("count = ");
+      oled.setCursor(50,18);
+      oled.print(count);
+      oled.setCursor(0,28);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.display();
+    }
+ 
+  else if(delaycount >= 1000)
+    {
+     
+      oled.clearDisplay();
+      oled.setCursor(0,0);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.setCursor(15, 8);
+      oled.print("VISITOR COUNTER");
+      oled.setCursor(0, 18);
+      oled.print("count = ");
+      oled.setCursor(50,28);
+      oled.print(count);
+      oled.setCursor(0,30);
+      oled.print("^^^^^^^^^^^^^^^^^^^^");
+      oled.display();
+    }
+    }      
+}
